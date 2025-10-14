@@ -1,37 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:padding="24dp"
-    android:gravity="center_horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    android:gravity="center_horizontal">
 
+    <!-- Profile button (hidden until login success) -->
+    <Button
+        android:id="@+id/btnProfile"
+        android:text="Go to Profile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:visibility="gone"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Welcome message (hidden until login success) -->
+    <TextView
+        android:id="@+id/tvWelcome"
+        android:text=""
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:layout_marginBottom="24dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <!-- Email input -->
     <EditText
         android:id="@+id/etEmail"
         android:hint="Email"
         android:inputType="textEmailAddress"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" />
 
+    <!-- Password input -->
     <EditText
         android:id="@+id/etPassword"
         android:hint="Password"
         android:inputType="textPassword"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" />
 
+    <!-- Login button -->
     <Button
         android:id="@+id/btnLogin"
         android:text="Login"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp" />
 
+    <!-- Go to Sign-Up -->
     <Button
         android:id="@+id/btnGoToSignUp"
         android:text="Don’t have an account? Sign Up"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"/>
-
-
+        android:layout_marginTop="8dp" />
 </LinearLayout>

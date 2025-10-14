@@ -1,64 +1,51 @@
+package com.example.application
 
-package com.example.application // It's good practice to declare the package
-
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 
 class ProfileActivity : AppCompatActivity() {
 
-    private lateinit var dbRef: DatabaseReference
     private lateinit var auth: FirebaseAuth
+    private lateinit var database: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
+        val tvDetails = findViewById<TextView>(R.id.tvDetails)
+        val btnLogout = findViewById<Button>(R.id.btnLogout)
+
         auth = FirebaseAuth.getInstance()
-        dbRef = FirebaseDatabase.getInstance().getReference("Users").child(auth.currentUser!!.uid)
+        database = FirebaseDatabase.getInstance().getReference("Users")
 
-        val name = findViewById<EditText>(R.id.etName)
-        val phone = findViewById<EditText>(R.id.etPhone)
-        val btnUpdate = findViewById<Button>(R.id.btnUpdate)
+        val userId = auth.currentUser?.uid
+        if (userId != null) {
+            database.child(userId).get().addOnSuccessListener { snapshot ->
+                val name = snapshot.child("name").value.toString()
+                val email = snapshot.child("email").value.toString()
+                val phone = snapshot.child("phone").value.toString()
+                val role = snapshot.child("role").value.toString()
 
-        // Fetch data
-        dbRef.get().addOnSuccessListener { dataSnapshot ->
-            // Use dataSnapshot to avoid ambiguity and ensure safety
-            if (dataSnapshot.exists()) {
-                val currentName = dataSnapshot.child("name").getValue(String::class.java)
-                val currentPhone = dataSnapshot.child("phone").getValue(String::class.java)
-                name.setText(currentName)
-                phone.setText(currentPhone)
+                tvDetails.text = """
+                    Name: $name
+                    Email: $email
+                    Phone: $phone
+                    Role: $role
+                """.trimIndent()
             }
-        }.addOnFailureListener {
-            // It's good practice to handle potential errors
-            Toast.makeText(this, "Failed to load profile data.", Toast.LENGTH_SHORT).show()
         }
 
-        btnUpdate.setOnClickListener {
-            val updatedName = name.text.toString()
-            val updatedPhone = phone.text.toString()
-
-            if (updatedName.isNotEmpty() && updatedPhone.isNotEmpty()) {
-                val updates = mapOf(
-                    "name" to updatedName,
-                    "phone" to updatedPhone
-                )
-                dbRef.updateChildren(updates)
-                    .addOnSuccessListener {
-                        Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show()
-                    }
-                    .addOnFailureListener {
-                        Toast.makeText(this, "Failed to update profile", Toast.LENGTH_SHORT).show()
-                    }
-            } else {
-                Toast.makeText(this, "Name and phone cannot be empty", Toast.LENGTH_SHORT).show()
-            }
+        btnLogout.setOnClickListener {
+            auth.signOut()
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
         }
     }
 }
